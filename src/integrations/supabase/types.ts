@@ -14,16 +14,309 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      diet_logs: {
+        Row: {
+          calories: number
+          carbs_g: number | null
+          created_at: string | null
+          date: string
+          fat_g: number | null
+          food_name: string
+          id: string
+          meal_type: Database["public"]["Enums"]["meal_type"]
+          protein_g: number | null
+          user_id: string
+        }
+        Insert: {
+          calories: number
+          carbs_g?: number | null
+          created_at?: string | null
+          date: string
+          fat_g?: number | null
+          food_name: string
+          id?: string
+          meal_type: Database["public"]["Enums"]["meal_type"]
+          protein_g?: number | null
+          user_id: string
+        }
+        Update: {
+          calories?: number
+          carbs_g?: number | null
+          created_at?: string | null
+          date?: string
+          fat_g?: number | null
+          food_name?: string
+          id?: string
+          meal_type?: Database["public"]["Enums"]["meal_type"]
+          protein_g?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      diet_plans: {
+        Row: {
+          created_at: string | null
+          daily_calories: number
+          daily_carbs_g: number
+          daily_fat_g: number
+          daily_protein_g: number
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          daily_calories: number
+          daily_carbs_g: number
+          daily_fat_g: number
+          daily_protein_g: number
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          daily_calories?: number
+          daily_carbs_g?: number
+          daily_fat_g?: number
+          daily_protein_g?: number
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      hydration_logs: {
+        Row: {
+          amount_ml: number
+          created_at: string | null
+          date: string
+          id: string
+          time: string
+          user_id: string
+        }
+        Insert: {
+          amount_ml: number
+          created_at?: string | null
+          date: string
+          id?: string
+          time: string
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number
+          created_at?: string | null
+          date?: string
+          id?: string
+          time?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          activity_level: Database["public"]["Enums"]["activity_level"] | null
+          created_at: string | null
+          date_of_birth: string
+          fitness_goal: string | null
+          full_name: string
+          gender: Database["public"]["Enums"]["gender_type"]
+          height_cm: number | null
+          id: string
+          subscription_tier:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          updated_at: string | null
+          weight_kg: number | null
+        }
+        Insert: {
+          activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          created_at?: string | null
+          date_of_birth: string
+          fitness_goal?: string | null
+          full_name: string
+          gender: Database["public"]["Enums"]["gender_type"]
+          height_cm?: number | null
+          id: string
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          updated_at?: string | null
+          weight_kg?: number | null
+        }
+        Update: {
+          activity_level?: Database["public"]["Enums"]["activity_level"] | null
+          created_at?: string | null
+          date_of_birth?: string
+          fitness_goal?: string | null
+          full_name?: string
+          gender?: Database["public"]["Enums"]["gender_type"]
+          height_cm?: number | null
+          id?: string
+          subscription_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          updated_at?: string | null
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
+      sleep_logs: {
+        Row: {
+          bed_time: string
+          created_at: string | null
+          date: string
+          id: string
+          notes: string | null
+          quality: Database["public"]["Enums"]["sleep_quality"]
+          user_id: string
+          wake_time: string
+        }
+        Insert: {
+          bed_time: string
+          created_at?: string | null
+          date: string
+          id?: string
+          notes?: string | null
+          quality: Database["public"]["Enums"]["sleep_quality"]
+          user_id: string
+          wake_time: string
+        }
+        Update: {
+          bed_time?: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          notes?: string | null
+          quality?: Database["public"]["Enums"]["sleep_quality"]
+          user_id?: string
+          wake_time?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      workout_catalog: {
+        Row: {
+          calories_per_hour: number | null
+          category: Database["public"]["Enums"]["workout_category"]
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          calories_per_hour?: number | null
+          category: Database["public"]["Enums"]["workout_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          calories_per_hour?: number | null
+          category?: Database["public"]["Enums"]["workout_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      workout_logs: {
+        Row: {
+          calories_burned: number | null
+          created_at: string | null
+          date: string
+          duration_minutes: number
+          id: string
+          notes: string | null
+          user_id: string
+          workout_id: string | null
+          workout_name: string
+        }
+        Insert: {
+          calories_burned?: number | null
+          created_at?: string | null
+          date: string
+          duration_minutes: number
+          id?: string
+          notes?: string | null
+          user_id: string
+          workout_id?: string | null
+          workout_name: string
+        }
+        Update: {
+          calories_burned?: number | null
+          created_at?: string | null
+          date?: string
+          duration_minutes?: number
+          id?: string
+          notes?: string | null
+          user_id?: string
+          workout_id?: string | null
+          workout_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_logs_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workout_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      activity_level:
+        | "sedentary"
+        | "lightly_active"
+        | "moderately_active"
+        | "very_active"
+        | "extremely_active"
+      app_role: "admin" | "user"
+      gender_type: "male" | "female" | "other"
+      meal_type: "breakfast" | "lunch" | "dinner" | "snack"
+      sleep_quality: "poor" | "fair" | "good" | "excellent"
+      subscription_tier: "normal" | "pro"
+      workout_category:
+        | "cardio"
+        | "strength"
+        | "flexibility"
+        | "sports"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +443,26 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      activity_level: [
+        "sedentary",
+        "lightly_active",
+        "moderately_active",
+        "very_active",
+        "extremely_active",
+      ],
+      app_role: ["admin", "user"],
+      gender_type: ["male", "female", "other"],
+      meal_type: ["breakfast", "lunch", "dinner", "snack"],
+      sleep_quality: ["poor", "fair", "good", "excellent"],
+      subscription_tier: ["normal", "pro"],
+      workout_category: [
+        "cardio",
+        "strength",
+        "flexibility",
+        "sports",
+        "other",
+      ],
+    },
   },
 } as const
