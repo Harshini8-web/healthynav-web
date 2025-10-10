@@ -11,7 +11,6 @@ import Workouts from "./pages/Workouts";
 import Diet from "./pages/Diet";
 import Hydration from "./pages/Hydration";
 import Sleep from "./pages/Sleep";
-import Subscription from "./pages/Subscription";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import AppLayout from "./components/AppLayout";
@@ -33,7 +32,6 @@ const App = () => (
           <Route path="/diet" element={<AppLayout><Diet /></AppLayout>} />
           <Route path="/hydration" element={<AppLayout><Hydration /></AppLayout>} />
           <Route path="/sleep" element={<AppLayout><Sleep /></AppLayout>} />
-          <Route path="/subscription" element={<AppLayout><Subscription /></AppLayout>} />
           <Route path="/admin" element={<AppLayout><Admin /></AppLayout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

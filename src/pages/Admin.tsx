@@ -13,14 +13,7 @@ const Admin = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
       
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-      
-      return !!data;
+      return user.email === 'harshu200412@gmail.com';
     },
   });
 
@@ -81,8 +74,8 @@ const Admin = () => {
                   <TableCell className="font-medium">{user.full_name}</TableCell>
                   <TableCell>{user.id}</TableCell>
                   <TableCell>
-                    <Badge variant={user.subscription_tier === 'pro' ? 'default' : 'secondary'}>
-                      {user.subscription_tier}
+                    <Badge variant="secondary">
+                      {user.subscription_tier || 'normal'}
                     </Badge>
                   </TableCell>
                   <TableCell>

@@ -16,7 +16,6 @@ import {
   Utensils, 
   Droplet, 
   Moon, 
-  CreditCard,
   User,
   Shield
 } from 'lucide-react';
@@ -28,7 +27,6 @@ const menuItems = [
   { title: 'Diet', url: '/diet', icon: Utensils },
   { title: 'Hydration', url: '/hydration', icon: Droplet },
   { title: 'Sleep', url: '/sleep', icon: Moon },
-  { title: 'Subscription', url: '/subscription', icon: CreditCard },
   { title: 'Admin', url: '/admin', icon: Shield },
 ];
 
