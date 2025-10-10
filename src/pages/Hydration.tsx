@@ -8,9 +8,20 @@ import { toast } from '@/hooks/use-toast';
 import { Droplet, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { Progress } from '@/components/ui/progress';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const Hydration = () => {
   const [amount, setAmount] = useState('250');
+  const [pendingAmount, setPendingAmount] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
   const dailyGoal = 2000; // ml
@@ -54,9 +65,20 @@ const Hydration = () => {
       queryClient.invalidateQueries({ queryKey: ['hydration-logs'] });
       queryClient.invalidateQueries({ queryKey: ['hydration-stats'] });
       setAmount('250');
+      setPendingAmount(null);
       toast({ title: "Water intake logged!" });
     },
   });
+
+  const handleLogClick = (amt: number) => {
+    setPendingAmount(amt);
+  };
+
+  const confirmLog = () => {
+    if (pendingAmount) {
+      addHydration.mutate(pendingAmount);
+    }
+  };
 
   const totalIntake = hydrationLogs?.reduce((sum, log) => sum + log.amount_ml, 0) || 0;
   const progress = Math.min((totalIntake / dailyGoal) * 100, 100);
@@ -102,7 +124,7 @@ const Hydration = () => {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Amount in ml"
             />
-            <Button onClick={() => addHydration.mutate(parseInt(amount))}>
+            <Button onClick={() => handleLogClick(parseInt(amount))}>
               <Plus className="mr-2 h-4 w-4" />
               Log
             </Button>
@@ -113,7 +135,7 @@ const Hydration = () => {
               <Button
                 key={amt}
                 variant="outline"
-                onClick={() => addHydration.mutate(amt)}
+                onClick={() => handleLogClick(amt)}
               >
                 {amt}ml
               </Button>
@@ -140,6 +162,21 @@ const Hydration = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AlertDialog open={pendingAmount !== null} onOpenChange={(open) => !open && setPendingAmount(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Water Intake</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to log {pendingAmount}ml of water?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmLog}>Confirm</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
