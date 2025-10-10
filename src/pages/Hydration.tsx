@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-import { Droplet, Plus } from 'lucide-react';
+import { Droplet, Plus, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -67,6 +67,22 @@ const Hydration = () => {
       setAmount('250');
       setPendingAmount(null);
       toast({ title: "Water intake logged!" });
+    },
+  });
+
+  const deleteHydration = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('hydration_logs')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hydration-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['hydration-stats'] });
+      toast({ title: "Water intake deleted" });
     },
   });
 
@@ -152,8 +168,17 @@ const Hydration = () => {
           <div className="space-y-2">
             {hydrationLogs?.map(log => (
               <div key={log.id} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                <span className="font-medium">{log.amount_ml}ml</span>
-                <span className="text-sm text-muted-foreground">{log.time}</span>
+                <div className="flex items-center gap-3">
+                  <span className="font-medium">{log.amount_ml}ml</span>
+                  <span className="text-sm text-muted-foreground">{log.time}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteHydration.mutate(log.id)}
+                >
+                  <Trash2 className="h-4 w-4 text-destructive" />
+                </Button>
               </div>
             ))}
             {!hydrationLogs?.length && (
