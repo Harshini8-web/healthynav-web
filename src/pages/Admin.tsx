@@ -13,7 +13,14 @@ const Admin = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
       
-      return user.email === 'harshu200412@gmail.com';
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      return !!data;
     },
   });
 
