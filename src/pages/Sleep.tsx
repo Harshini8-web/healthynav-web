@@ -74,10 +74,18 @@ const Sleep = () => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
+    const date = formData.get('date') as string;
+    const bedTime = formData.get('bedTime') as string;
+    const wakeTime = formData.get('wakeTime') as string;
+    
+    // Combine date with times to create timestamps
+    const bedDateTime = `${date}T${bedTime}:00`;
+    const wakeDateTime = `${date}T${wakeTime}:00`;
+    
     addSleepLog.mutate({
-      date: formData.get('date'),
-      bed_time: formData.get('bedTime'),
-      wake_time: formData.get('wakeTime'),
+      date,
+      bed_time: bedDateTime,
+      wake_time: wakeDateTime,
       quality: formData.get('quality'),
       notes: formData.get('notes'),
     });
@@ -122,7 +130,7 @@ const Sleep = () => {
                 <Input
                   id="bedTime"
                   name="bedTime"
-                  type="datetime-local"
+                  type="time"
                   required
                 />
               </div>
@@ -131,7 +139,7 @@ const Sleep = () => {
                 <Input
                   id="wakeTime"
                   name="wakeTime"
-                  type="datetime-local"
+                  type="time"
                   required
                 />
               </div>

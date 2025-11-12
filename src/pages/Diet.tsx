@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,13 +8,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Target } from 'lucide-react';
 import { format } from 'date-fns';
 
 const Diet = () => {
   const [open, setOpen] = useState(false);
+  const [selectedDietType, setSelectedDietType] = useState<string>('');
   const queryClient = useQueryClient();
   const today = format(new Date(), 'yyyy-MM-dd');
+
+  const { data: dietTypes } = useQuery({
+    queryKey: ['diet-types'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('diet_types')
+        .select('*')
+        .order('diet_name');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const { data: dietLogs } = useQuery({
     queryKey: ['diet-logs', today],
@@ -88,6 +102,17 @@ const Diet = () => {
 
   const totalCalories = dietLogs?.reduce((sum, log) => sum + log.calories, 0) || 0;
   const totalProtein = dietLogs?.reduce((sum, log) => sum + log.protein_g, 0) || 0;
+  const totalCarbs = dietLogs?.reduce((sum, log) => sum + log.carbs_g, 0) || 0;
+  const totalFat = dietLogs?.reduce((sum, log) => sum + log.fat_g, 0) || 0;
+
+  const selectedDiet = dietTypes?.find(dt => dt.id === selectedDietType);
+  
+  const remaining = selectedDiet ? {
+    calories: selectedDiet.calorie_target - totalCalories,
+    protein: selectedDiet.protein_target - totalProtein,
+    carbs: selectedDiet.carbs_target - totalCarbs,
+    fat: selectedDiet.fat_target - totalFat,
+  } : null;
 
   return (
     <div className="space-y-6">
@@ -159,23 +184,113 @@ const Diet = () => {
         </Dialog>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Today's Totals</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span>Calories</span>
-              <span className="font-bold">{totalCalories}</span>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Target className="h-5 w-5" />
+            Diet Plan Tracker
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="dietType">Select Your Diet Plan</Label>
+            <Select value={selectedDietType} onValueChange={setSelectedDietType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose a diet plan" />
+              </SelectTrigger>
+              <SelectContent>
+                {dietTypes?.map(diet => (
+                  <SelectItem key={diet.id} value={diet.id}>
+                    {diet.diet_name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {selectedDiet && (
+            <div className="space-y-4 pt-4 border-t">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold mb-3">Daily Targets</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Calories:</span>
+                      <span className="font-medium">{selectedDiet.calorie_target}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Protein:</span>
+                      <span className="font-medium">{selectedDiet.protein_target}g</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Carbs:</span>
+                      <span className="font-medium">{selectedDiet.carbs_target}g</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Fat:</span>
+                      <span className="font-medium">{selectedDiet.fat_target}g</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-3">Today's Progress</h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Consumed:</span>
+                      <span className="font-medium">{totalCalories} cal</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Protein:</span>
+                      <span className="font-medium">{totalProtein}g</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Carbs:</span>
+                      <span className="font-medium">{totalCarbs}g</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Fat:</span>
+                      <span className="font-medium">{totalFat}g</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {remaining && (
+                <div className="bg-primary/5 p-4 rounded-lg">
+                  <h3 className="font-semibold mb-3">Remaining Today</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div className="text-center">
+                      <p className="text-muted-foreground text-xs">Calories</p>
+                      <p className={`font-bold text-lg ${remaining.calories < 0 ? 'text-destructive' : 'text-primary'}`}>
+                        {remaining.calories}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-muted-foreground text-xs">Protein</p>
+                      <p className={`font-bold text-lg ${remaining.protein < 0 ? 'text-destructive' : 'text-primary'}`}>
+                        {remaining.protein}g
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-muted-foreground text-xs">Carbs</p>
+                      <p className={`font-bold text-lg ${remaining.carbs < 0 ? 'text-destructive' : 'text-primary'}`}>
+                        {remaining.carbs}g
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-muted-foreground text-xs">Fat</p>
+                      <p className={`font-bold text-lg ${remaining.fat < 0 ? 'text-destructive' : 'text-primary'}`}>
+                        {remaining.fat}g
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="flex justify-between">
-              <span>Protein</span>
-              <span className="font-bold">{totalProtein}g</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold">Today's Meals</h2>

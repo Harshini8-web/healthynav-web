@@ -60,6 +60,7 @@ export type Database = {
           daily_carbs_g: number
           daily_fat_g: number
           daily_protein_g: number
+          diet_type_id: string | null
           id: string
           updated_at: string | null
           user_id: string
@@ -70,6 +71,7 @@ export type Database = {
           daily_carbs_g: number
           daily_fat_g: number
           daily_protein_g: number
+          diet_type_id?: string | null
           id?: string
           updated_at?: string | null
           user_id: string
@@ -80,9 +82,48 @@ export type Database = {
           daily_carbs_g?: number
           daily_fat_g?: number
           daily_protein_g?: number
+          diet_type_id?: string | null
           id?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diet_plans_diet_type_id_fkey"
+            columns: ["diet_type_id"]
+            isOneToOne: false
+            referencedRelation: "diet_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      diet_types: {
+        Row: {
+          calorie_target: number
+          carbs_target: number
+          created_at: string | null
+          diet_name: string
+          fat_target: number
+          id: string
+          protein_target: number
+        }
+        Insert: {
+          calorie_target: number
+          carbs_target: number
+          created_at?: string | null
+          diet_name: string
+          fat_target: number
+          id?: string
+          protein_target: number
+        }
+        Update: {
+          calorie_target?: number
+          carbs_target?: number
+          created_at?: string | null
+          diet_name?: string
+          fat_target?: number
+          id?: string
+          protein_target?: number
         }
         Relationships: []
       }
