@@ -79,8 +79,17 @@ const Sleep = () => {
     const wakeTime = formData.get('wakeTime') as string;
     
     // Combine date with times to create timestamps
-    const bedDateTime = `${date}T${bedTime}:00`;
-    const wakeDateTime = `${date}T${wakeTime}:00`;
+    let bedDateTime = `${date}T${bedTime}:00`;
+    let wakeDateTime = `${date}T${wakeTime}:00`;
+    
+    // If wake time is before bed time, add one day to wake time
+    const bedDate = new Date(bedDateTime);
+    const wakeDate = new Date(wakeDateTime);
+    if (wakeDate < bedDate) {
+      const nextDay = new Date(wakeDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      wakeDateTime = nextDay.toISOString().slice(0, 19);
+    }
     
     addSleepLog.mutate({
       date,
@@ -92,8 +101,14 @@ const Sleep = () => {
   };
 
   const calculateDuration = (bedTime: string, wakeTime: string) => {
-    const bed = new Date(bedTime);
-    const wake = new Date(wakeTime);
+    let bed = new Date(bedTime);
+    let wake = new Date(wakeTime);
+    
+    // If wake time is before bed time, it means we woke up the next day
+    if (wake < bed) {
+      wake = new Date(wake.getTime() + 24 * 60 * 60 * 1000);
+    }
+    
     const hours = differenceInHours(wake, bed);
     const minutes = differenceInMinutes(wake, bed) % 60;
     return `${hours}h ${minutes}m`;
