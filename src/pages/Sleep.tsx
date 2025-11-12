@@ -78,39 +78,39 @@ const Sleep = () => {
     const bedTime = formData.get('bedTime') as string;
     const wakeTime = formData.get('wakeTime') as string;
     
-    // Combine date with times to create timestamps
-    let bedDateTime = `${date}T${bedTime}:00`;
-    let wakeDateTime = `${date}T${wakeTime}:00`;
+    // Parse the date and times properly
+    const [bedHours, bedMinutes] = bedTime.split(':').map(Number);
+    const [wakeHours, wakeMinutes] = wakeTime.split(':').map(Number);
     
-    // If wake time is before bed time, add one day to wake time
-    const bedDate = new Date(bedDateTime);
-    const wakeDate = new Date(wakeDateTime);
-    if (wakeDate < bedDate) {
-      const nextDay = new Date(wakeDate);
-      nextDay.setDate(nextDay.getDate() + 1);
-      wakeDateTime = nextDay.toISOString().slice(0, 19);
+    // Create date objects for bed time and wake time
+    const bedDateTime = new Date(date);
+    bedDateTime.setHours(bedHours, bedMinutes, 0, 0);
+    
+    const wakeDateTime = new Date(date);
+    wakeDateTime.setHours(wakeHours, wakeMinutes, 0, 0);
+    
+    // If wake time is before bed time, it means next day
+    if (wakeDateTime <= bedDateTime) {
+      wakeDateTime.setDate(wakeDateTime.getDate() + 1);
     }
     
     addSleepLog.mutate({
       date,
-      bed_time: bedDateTime,
-      wake_time: wakeDateTime,
+      bed_time: bedDateTime.toISOString(),
+      wake_time: wakeDateTime.toISOString(),
       quality: formData.get('quality'),
       notes: formData.get('notes'),
     });
   };
 
   const calculateDuration = (bedTime: string, wakeTime: string) => {
-    let bed = new Date(bedTime);
-    let wake = new Date(wakeTime);
+    const bed = new Date(bedTime);
+    const wake = new Date(wakeTime);
     
-    // If wake time is before bed time, it means we woke up the next day
-    if (wake < bed) {
-      wake = new Date(wake.getTime() + 24 * 60 * 60 * 1000);
-    }
+    const totalMinutes = differenceInMinutes(wake, bed);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
     
-    const hours = differenceInHours(wake, bed);
-    const minutes = differenceInMinutes(wake, bed) % 60;
     return `${hours}h ${minutes}m`;
   };
 
